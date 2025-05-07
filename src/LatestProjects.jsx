@@ -44,7 +44,7 @@ const ScrollProject = ({ title, description, image, link }) => {
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-4 px-6 py-3 bg-cyan-500 text-white font-bold rounded-full shadow hover:bg-cyan-400 transition"
+            className="inline-block mt-4 px-6 py-3 bg-white text-black font-bold rounded-full shadow hover:bg-cyan-400 transition"
           >
             Visit Project
           </a>
