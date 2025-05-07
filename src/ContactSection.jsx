@@ -22,28 +22,19 @@ const ContactSection = () => {
     e.preventDefault();
     setLoading(true);
 
-    const userTemplateParams = {
-      ...formData,
-    };
-
-    const adminTemplateParams = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      message: formData.message,
-    };
+    const userTemplateParams = { ...formData };
+    const adminTemplateParams = { ...formData };
 
     try {
-      // 1. Send confirmation email to user
+      // 1. Send confirmation to user
       await emailjs.send(
-        'service_g4chyxq',
-        'template_tqsmojo',
+        'service_g4chyxq',       // Your service ID
+        'template_tqsmojo',      // User template ID
         userTemplateParams,
-        'DSzwHd6qsdZtoJh1I'
+        'DSzwHd6qsdZtoJh1I'      // Public key
       );
 
-      // 2. Send alert email to you
+      // 2. Send notification to admin
       await emailjs.send(
         'service_g4chyxq',
         'template_ctomnho',
@@ -52,13 +43,19 @@ const ContactSection = () => {
       );
 
       setStatus('success');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      });
     } catch (error) {
       setStatus('error');
       console.error('EmailJS error:', error);
     } finally {
       setLoading(false);
-      setTimeout(() => setStatus(null), 4000);
+      setTimeout(() => setStatus(null), 3000); // Auto close after 3s
     }
   };
 
@@ -129,23 +126,60 @@ const ContactSection = () => {
             </button>
           </div>
         </form>
-
-        {/* Success/Failure Overlay */}
-        {status && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-4 rounded-lg text-white text-center z-50 ${
-              status === 'success' ? 'bg-green-600' : 'bg-red-600'
-            }`}
-          >
-            {status === 'success'
-              ? 'Your message has been sent successfully!'
-              : 'Something went wrong. Please try again.'}
-          </motion.div>
-        )}
       </div>
+
+      {/* Popup Overlay */}
+      {status && (
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center"
+        >
+          <div className="bg-white text-center px-8 py-10 rounded-2xl shadow-xl max-w-sm w-full relative">
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              {status === 'success' ? (
+                <svg
+                  className="w-16 h-16 text-green-500 animate-bounce"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg
+                  className="w-16 h-16 text-red-500 animate-pulse"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+            </div>
+
+            <h3 className="text-xl font-bold mb-2 text-black">
+              {status === 'success' ? 'Message Sent!' : 'Failed to Send'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {status === 'success'
+                ? 'Your message has been sent successfully.'
+                : 'Something went wrong. Please try again.'}
+            </p>
+
+            <button
+              onClick={() => setStatus(null)}
+              className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-6 py-2 rounded-full shadow"
+            >
+              Close
+            </button>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };
